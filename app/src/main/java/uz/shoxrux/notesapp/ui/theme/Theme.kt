@@ -1,58 +1,75 @@
 package uz.shoxrux.notesapp.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import uz.shoxrux.presentation.ui.color.AppColors
+import uz.shoxrux.presentation.ui.color.LocalAppColors
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val DarkColorScheme = AppColors(
+    background = Color(0xFF0C0B09),
+    primary = Color(0xFFFF9800),
+    secondary = Color(0xFFFFBE6C),
+    stroke = Color(0xFF868686),
+    border = Color(0xFFADADAD),
+    titleText = Color(0xFFFFFCF1),
+    contentText = Color(0xFFC6C6C6),
+    hint = Color(0xFF939393),
+    gray = Color(0xFF3D3D3D),
+    transparent = Color(0x00FFFFFF),
+    semiTransparent = Color(0x9C898989)
+
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val LightColorScheme = AppColors(
+    background = Color(0xFFFFF9F2),
+    primary = Color(0xFFFF9800),
+    secondary = Color(0xFFFFBE6C),
+    stroke = Color(0xFF535353),
+    border = Color(0xFF656565),
+    titleText = Color(0xFF110F0D),
+    contentText = Color(0xFF262522),
+    hint = Color(0xFF5C5C5C),
+    gray = Color(0xFFDBDBDB),
+    transparent = Color(0x00FFFFFF),
+    semiTransparent = Color(0x9C898989)
 )
 
 @Composable
 fun NotesAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val context = LocalContext.current
+
+    val materialColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkColorScheme()
+        else -> lightColorScheme()
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val appColors = if (darkTheme) DarkColorScheme else LightColorScheme
+
+    CompositionLocalProvider(
+        LocalAppColors provides appColors,
+    ) {
+        MaterialTheme(
+            colorScheme = materialColorScheme,
+            typography = Typography(),
+            content = content
+        )
+    }
 }

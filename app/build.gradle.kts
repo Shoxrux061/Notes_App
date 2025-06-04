@@ -46,25 +46,24 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(project(":core"))
+    implementation(project(":domain"))
 
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.navigation.compose)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.runtime)
 
     //Dagger Hilt
     implementation(libs.hilt.android)

@@ -41,27 +41,20 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":core"))
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.hilt.android)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.navigation.compose)
-
-    //Constraint layout
-    implementation(libs.androidx.constraintlayout.compose.v101)
-
+    implementation(libs.androidx.runtime)
 
     //ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -70,9 +63,4 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    //Masked Edit Text
-    implementation(libs.compose.input.mask)
-
-    //Coil
-    implementation(libs.coil.compose)
 }

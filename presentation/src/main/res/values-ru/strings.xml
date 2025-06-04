@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notes App</string>
+    <string name="search">Поиск</string>
+    <string name="notes">Заметки</string>
+    <string name="not_found">Файл не найден, попробуйте заново</string>
+    <string name="title_hint">Заголовок</string>
+    <string name="description_hint">Напишите что нибудь…</string>
+</resources>

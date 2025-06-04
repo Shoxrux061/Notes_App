@@ -3,16 +3,16 @@ package uz.shoxrux.notesapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import uz.shoxrux.notesapp.ui.navigation.AppNavHost
 import uz.shoxrux.notesapp.ui.theme.NotesAppTheme
+import uz.shoxrux.presentation.screens.home.HomeScreen
+import uz.shoxrux.presentation.screens.home.HomeViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -22,6 +22,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             NotesAppTheme {
 
+                val snackbarHostState = remember { SnackbarHostState() }
+
+                Scaffold(
+                    snackbarHost = {
+                        SnackbarHost(snackbarHostState)
+                    }
+                ) { paddingValues ->
+
+                    AppNavHost(paddingValues, snackbarHostState)
+
+                }
             }
         }
     }

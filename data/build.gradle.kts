@@ -39,10 +39,14 @@ android {
 dependencies {
 
     implementation(project(":domain"))
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
@@ -60,9 +64,5 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
-
-    implementation(libs.androidx.room.ktx)
-
-    implementation(libs.androidx.room.paging)
 
 }
