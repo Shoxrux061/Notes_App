@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -46,6 +44,9 @@ fun HomeScreen(
     snackbarHostState: SnackbarHostState
 ) {
 
+    val isSearching = viewModel.isSearching.collectAsState().value
+    val searchText = viewModel.searchText.collectAsState().value
+
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     val noteSaved = savedStateHandle?.get<Boolean>("note_saved") == true
 
@@ -58,10 +59,6 @@ fun HomeScreen(
             }
             savedStateHandle?.set("note_saved", false)
         }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.getAllNotes()
     }
 
     val notes = viewModel.notes.collectAsState().value
@@ -83,35 +80,31 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                Text(
-                    text = stringResource(R.string.notes),
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                        fontSize = 22.sp,
-                        color = colors.titleText
-                    )
-                )
+                if (!isSearching) {
 
-                Spacer(Modifier.weight(1f))
-
-                Card(
-                    modifier = Modifier
-                        .size(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(colors.gray)
-                ) {
-                    Box(Modifier.fillMaxSize()) {
-                        Icon(
-                            modifier = Modifier.align(Alignment.Center),
-                            contentDescription = null,
-                            painter = painterResource(R.drawable.ic_search),
-                            tint = Color.White
+                    Text(
+                        text = stringResource(R.string.notes),
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                            fontSize = 22.sp,
+                            color = colors.titleText
                         )
-                    }
+                    )
                 }
+
+                AnimatedSearchBar(
+                    searchText = searchText,
+                    onTextChange = {
+                        viewModel.onNewText(it)
+                    },
+                    onToggleSearch = {
+                        viewModel.toggleSearchState()
+                    },
+                    isSearching = isSearching
+                )
             }
 
-            if (!notes.isNullOrEmpty()) {
+            if (notes.isNotEmpty()) {
                 LazyColumn(Modifier.padding(top = 20.dp)) {
                     items(notes.size) {
                         NoteItem(

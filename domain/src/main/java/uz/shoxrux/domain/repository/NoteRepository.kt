@@ -9,6 +9,8 @@ interface NoteRepository {
 
     suspend fun addNote(note: NoteItem)
 
-    suspend fun deleteNote(id: Int)
+    suspend fun deleteNotes(id: List<Int>)
+
+    suspend fun filteredNotes(query: String): Flow<List<NoteItem>>
 
 }

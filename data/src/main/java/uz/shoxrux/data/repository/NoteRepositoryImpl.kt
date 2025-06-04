@@ -1,6 +1,7 @@
 package uz.shoxrux.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uz.shoxrux.data.locale.room.NoteDao
 import uz.shoxrux.data.mapper.toData
@@ -20,8 +21,12 @@ class NoteRepositoryImpl @Inject constructor(
         dao.insert(note.toData())
     }
 
-    override suspend fun deleteNote(id: Int) {
+    override suspend fun deleteNotes(id: List<Int>) {
         dao.deleteById(id)
+    }
+
+    override suspend fun filteredNotes(query: String): Flow<List<NoteItem>> = flow {
+        emit(dao.searchNotes(query))
     }
 
 }
