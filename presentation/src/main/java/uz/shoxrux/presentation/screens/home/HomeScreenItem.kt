@@ -83,7 +83,7 @@ fun NoteItem(
         Row(
             modifier = Modifier.padding(20.dp)
         ) {
-            Column {
+            Column(Modifier.weight(1f)) {
 
                 Text(
                     maxLines = 1,

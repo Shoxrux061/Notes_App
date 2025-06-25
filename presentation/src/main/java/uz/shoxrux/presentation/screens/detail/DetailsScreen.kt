@@ -92,7 +92,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel, 
 
                     if (contentText.value.isNotBlank()) {
                         val note = NoteItem(
-                            title = titleText.value.ifBlank { "New note" },
+                            title = titleText.value.ifBlank { "New Note" },
                             content = contentText.value
                         )
                         if (noteId == -1) {

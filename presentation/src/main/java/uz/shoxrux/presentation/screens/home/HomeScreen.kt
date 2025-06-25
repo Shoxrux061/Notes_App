@@ -73,7 +73,7 @@ fun HomeScreen(
     LaunchedEffect(noteSaved) {
         if (noteSaved) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("Заметка сохранена")
+                snackbarHostState.showSnackbar("Note saved")
             }
             savedStateHandle?.set("note_saved", false)
         }
@@ -175,7 +175,7 @@ fun HomeScreen(
                     if (!isSearching) {
 
                         Text(
-                            text = stringResource(R.string.notes),
+                            text = "Notes",
                             style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.nunito_bold)),
                                 fontSize = 22.sp,
@@ -248,7 +248,7 @@ fun HomeScreen(
 
                         Text(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "No notes",
+                            text = "No Notes",
                             style = TextStyle(
                                 color = colors.contentText,
                                 fontSize = 16.sp,
