@@ -58,7 +58,6 @@ A multi-layered Android application for creating and managing notes, built using
 | Dependency Injection | [Dagger Hilt](https://dagger.dev/hilt/)         |
 | Architecture    | Clean Architecture, MVVM, Multimodule Structure       |
 | Data Storage    | [Room](https://developer.android.com/jetpack/androidx/releases/room) |
-| Networking      | [Retrofit](https://square.github.io/retrofit/)        |
 | Async & Reactive| [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html), [Flow](https://developer.android.com/kotlin/flow) |
 | Theming         | Light/Dark Mode Support                               |
 | Target SDK      | Android SDK 26+   
