@@ -14,11 +14,17 @@ class DetailViewModel @Inject constructor(
     private val repository: NoteRepository
 ) : ViewModel() {
 
-    private val _isSuccess = MutableStateFlow(true)
+    private val _isSuccess = MutableStateFlow(false)
     val isSuccess: MutableStateFlow<Boolean> = _isSuccess
 
     private val _error = MutableStateFlow<String?>(null)
     val error: MutableStateFlow<String?> = _error
+
+    private val _titleText = MutableStateFlow("")
+    val titleText: MutableStateFlow<String> = _titleText
+
+    private val _contentText = MutableStateFlow("")
+    val contentText: MutableStateFlow<String> = _contentText
 
     fun addNote(noteItem: NoteItem) {
 
@@ -33,6 +39,54 @@ class DetailViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun editNote(noteItem: NoteItem) {
+        viewModelScope.launch {
+            try {
+                repository.editNote(noteItem).collect { isSuccess ->
+                    if (isSuccess) {
+                        _isSuccess.value = true
+                    } else {
+                        _error.value = "Unknown error"
+                    }
+                }
+            } catch (e: Exception) {
+                _error.value = e.localizedMessage ?: "Unexpected error"
+            }
+        }
+    }
+
+
+    fun setArgument(id: Int) {
+        viewModelScope.launch {
+
+            try {
+                repository.getNoteById(id).collect { result ->
+                    _titleText.value = result.title
+                    _contentText.value = result.content
+                }
+
+            } catch (e: Exception) {
+                _error.value = e.localizedMessage
+            }
+
+        }
+    }
+
+    fun clearState() {
+        _titleText.value = ""
+        _contentText.value = ""
+        _isSuccess.value = false
+        _error.value = null
+    }
+
+    fun onContentNewText(newText: String) {
+        _contentText.value = newText
+    }
+
+    fun onTitleNewText(newText: String) {
+        _titleText.value = newText
     }
 
 }

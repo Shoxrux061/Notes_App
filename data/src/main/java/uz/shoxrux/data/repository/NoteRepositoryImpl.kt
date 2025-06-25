@@ -1,5 +1,6 @@
 package uz.shoxrux.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -26,7 +27,20 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun filteredNotes(query: String): Flow<List<NoteItem>> = flow {
-        emit(dao.searchNotes(query))
+
+        val result = dao.searchNotes(query).map { it.toDomain() }
+        emit(result)
+    }
+
+    override suspend fun getNoteById(id: Int): Flow<NoteItem> = flow {
+        val result = dao.getNoteById(id).toDomain()
+        emit(result)
+    }
+
+    override suspend fun editNote(note: NoteItem): Flow<Boolean> = flow {
+        val result = dao.editNote(note.toData()) != 0
+        Log.d("TAGEditDao", "editNote:$result $note")
+        emit(result)
     }
 
 }

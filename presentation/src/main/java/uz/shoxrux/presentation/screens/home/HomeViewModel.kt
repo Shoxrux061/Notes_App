@@ -29,6 +29,9 @@ class HomeViewModel @Inject constructor(
 
     private val allNotes = MutableStateFlow<List<NoteItem>>(emptyList())
 
+    private val _selectedNotes = MutableStateFlow<List<NoteItem>>(emptyList())
+    val selectedNotes: StateFlow<List<NoteItem>> = _selectedNotes
+
     val notes: StateFlow<List<NoteItem>> = combine(
         allNotes,
         _searchText,
@@ -74,6 +77,22 @@ class HomeViewModel @Inject constructor(
 
     fun toggleSearchState() {
         _isSearching.value = !_isSearching.value
+    }
+
+    fun clearSelected() {
+        _selectedNotes.value = emptyList()
+    }
+
+    fun toggleNoteSelection(note: NoteItem) {
+        _selectedNotes.value = if (_selectedNotes.value.any { it.id == note.id }) {
+            _selectedNotes.value.filterNot { it.id == note.id }
+        } else {
+            _selectedNotes.value + note
+        }
+    }
+
+    fun selectAll() {
+        _selectedNotes.value = allNotes.value
     }
 
 }

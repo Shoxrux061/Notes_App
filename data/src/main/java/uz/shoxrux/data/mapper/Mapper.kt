@@ -13,6 +13,7 @@ fun NoteEntity.toDomain(): NoteItem {
 
 fun NoteItem.toData(): NoteEntity {
     return NoteEntity(
+        id = this.id,
         title = this.title,
         content = this.content
     )

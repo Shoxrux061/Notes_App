@@ -1,7 +1,9 @@
 package uz.shoxrux.presentation.screens.home
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +15,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,10 +48,19 @@ import uz.shoxrux.presentation.ui.color.LocalAppColors
 
 @Composable
 fun HomeScreen(
+
     viewModel: HomeViewModel,
     navController: NavHostController,
     snackbarHostState: SnackbarHostState
 ) {
+
+    val deletingIndicatorIsActive = remember { mutableStateOf(false) }
+
+    val selectedNotes = viewModel.selectedNotes.collectAsState().value
+
+    val notes = viewModel.notes.collectAsState().value
+
+    val allItemsChecked = selectedNotes.size == notes.size && notes.isNotEmpty()
 
     val isSearching = viewModel.isSearching.collectAsState().value
     val searchText = viewModel.searchText.collectAsState().value
@@ -61,8 +79,6 @@ fun HomeScreen(
         }
     }
 
-    val notes = viewModel.notes.collectAsState().value
-
     val colors = LocalAppColors.current
 
     Box(
@@ -76,41 +92,137 @@ fun HomeScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            if (deletingIndicatorIsActive.value) {
 
-                if (!isSearching) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    IconButton(
+                        onClick = {
+                            deletingIndicatorIsActive.value = false
+                            viewModel.clearSelected()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            null
+                        )
+
+                    }
+
+                    Spacer(Modifier.height(10.dp))
 
                     Text(
-                        text = stringResource(R.string.notes),
+                        text = selectedNotes.size.toString(),
                         style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                            fontSize = 22.sp,
-                            color = colors.titleText
+                            color = colors.titleText,
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.nunito_medium))
                         )
                     )
+
+                    Spacer(Modifier.weight(1f))
+
+                    Text(
+                        text = "Select All",
+                        style = TextStyle(
+                            color = colors.contentText,
+                            fontFamily = FontFamily(Font(R.font.nunito_medium)),
+                            fontSize = 18.sp
+                        )
+                    )
+
+                    Checkbox(
+                        colors = CheckboxDefaults.colors(colors.primary),
+                        checked = allItemsChecked,
+                        onCheckedChange = {
+                            viewModel.selectAll()
+                        }
+                    )
+
+                    IconButton(
+                        onClick = {
+                            if (selectedNotes.isNotEmpty()) {
+                                val ids = mutableListOf(0)
+                                selectedNotes.forEachIndexed { _, noteItem ->
+                                    ids.add(noteItem.id)
+                                }
+                                Toast.makeText(navController.context, "Deleted", Toast.LENGTH_SHORT)
+                                    .show()
+                                deletingIndicatorIsActive.value = false
+                                viewModel.deleteNotesById(ids)
+                            }
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_delete),
+                            tint = Color.Red,
+                            contentDescription = null
+                        )
+                    }
+
                 }
 
-                AnimatedSearchBar(
-                    searchText = searchText,
-                    onTextChange = {
-                        viewModel.onNewText(it)
-                    },
-                    onToggleSearch = {
-                        viewModel.toggleSearchState()
-                    },
-                    isSearching = isSearching
-                )
+            } else {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    if (!isSearching) {
+
+                        Text(
+                            text = stringResource(R.string.notes),
+                            style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                                fontSize = 22.sp,
+                                color = colors.titleText
+                            )
+                        )
+                    }
+                    AnimatedSearchBar(
+                        searchText = searchText,
+                        onTextChange = {
+                            viewModel.onNewText(it)
+                        },
+                        onToggleSearch = {
+                            viewModel.toggleSearchState()
+                        },
+                        isSearching = isSearching
+                    )
+                }
             }
 
             if (notes.isNotEmpty()) {
                 LazyColumn(Modifier.padding(top = 20.dp)) {
-                    items(notes.size) {
+                    items(notes.size) { itIndex ->
+                        val note = notes[itIndex]
+                        val isSelected = selectedNotes.any { it.id == note.id }
+
                         NoteItem(
-                            title = notes[it].title,
-                            content = notes[it].content
+                            title = note.title,
+                            content = note.content,
+                            isChecking = deletingIndicatorIsActive.value,
+                            isSelected = isSelected,
+                            onItemClick = {
+                                if (!deletingIndicatorIsActive.value) {
+                                    navController.navigate(NavRoutes.DETAIL_SCREEN + "/${note.id}")
+                                } else {
+                                    viewModel.toggleNoteSelection(note)
+                                }
+                            },
+                            onLongPressed = {
+                                deletingIndicatorIsActive.value = true
+                                viewModel.toggleNoteSelection(note)
+                            },
+                            onCheckChanged = {
+                                viewModel.toggleNoteSelection(note)
+                            }
                         )
+
                         Spacer(Modifier.height(20.dp))
                     }
                 }
@@ -136,7 +248,7 @@ fun HomeScreen(
 
                         Text(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Create your first note",
+                            text = "No notes",
                             style = TextStyle(
                                 color = colors.contentText,
                                 fontSize = 16.sp,
@@ -150,24 +262,27 @@ fun HomeScreen(
             }
         }
 
-        FloatingActionButton(
-            modifier = Modifier
-                .padding(bottom = 60.dp)
-                .size(50.dp)
-                .align(Alignment.BottomEnd),
-            onClick = {
-                navController.navigate(NavRoutes.DETAIL_SCREEN)
-            },
-            shape = RoundedCornerShape(8.dp),
-            containerColor = colors.gray
-        ) {
+        if (!deletingIndicatorIsActive.value) {
 
-            Icon(
-                painter = painterResource(R.drawable.ic_add),
-                contentDescription = null,
-                tint = Color.White
-            )
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(bottom = 60.dp)
+                    .size(50.dp)
+                    .align(Alignment.BottomEnd),
+                onClick = {
+                    navController.navigate(NavRoutes.DETAIL_SCREEN + "/-1")
+                },
+                shape = RoundedCornerShape(8.dp),
+                containerColor = colors.gray
+            ) {
 
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+
+            }
         }
     }
 }

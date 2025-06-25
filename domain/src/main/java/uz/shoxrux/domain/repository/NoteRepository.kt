@@ -13,4 +13,8 @@ interface NoteRepository {
 
     suspend fun filteredNotes(query: String): Flow<List<NoteItem>>
 
+    suspend fun getNoteById(id: Int): Flow<NoteItem>
+
+    suspend fun editNote(note: NoteItem): Flow<Boolean>
+
 }

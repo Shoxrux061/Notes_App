@@ -1,5 +1,7 @@
 package uz.shoxrux.presentation.screens.detail
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,12 +29,40 @@ import uz.shoxrux.presentation.ui.color.LocalAppColors
 import uz.shoxrux.presentation.ui.components.AppSmallButton
 
 @Composable
-fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel) {
+fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel, noteId: Int = -1) {
 
-    val titleText = remember { mutableStateOf("") }
-    val contentText = remember { mutableStateOf("") }
+    BackHandler {
+        navController.popBackStack()
+        viewModel.clearState()
+    }
 
+    LaunchedEffect(Unit) {
+        if (noteId != -1) {
+            viewModel.setArgument(noteId)
+        }
+    }
+
+    val titleText = viewModel.titleText.collectAsState()
+    val contentText = viewModel.contentText.collectAsState()
+
+    val isSuccess = viewModel.isSuccess.collectAsState().value
+    val error = viewModel.error.collectAsState().value
     val colors = LocalAppColors.current
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.set("note_saved", true)
+            navController.popBackStack()
+            viewModel.clearState()
+        }
+    }
+    LaunchedEffect(error) {
+
+        Log.d("TAGError", "DetailsScreen:$error")
+
+    }
 
     Column(
         modifier = Modifier
@@ -50,6 +80,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel) 
                 painter = R.drawable.ic_back,
                 onClick = {
                     navController.popBackStack()
+                    viewModel.clearState()
                 }
             )
 
@@ -59,17 +90,17 @@ fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel) 
                 painter = R.drawable.ic_save,
                 onClick = {
 
-                    if (titleText.value.isNotBlank() && contentText.value.isNotBlank()) {
+                    if (contentText.value.isNotBlank()) {
                         val note = NoteItem(
-                            title = titleText.value,
+                            title = titleText.value.ifBlank { "New note" },
                             content = contentText.value
                         )
-                        viewModel.addNote(note)
-
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("note_saved", true)
-                        navController.popBackStack()
+                        if (noteId == -1) {
+                            viewModel.addNote(note)
+                        } else {
+                            Log.d("TAGEdit", "DetailsScreen: edit button")
+                            viewModel.editNote(note.copy(id = noteId))
+                        }
                     }
                 }
             )
@@ -98,7 +129,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel) 
             ),
             value = titleText.value,
             onValueChange = {
-                titleText.value = it
+                viewModel.onTitleNewText(it)
             }
         )
 
@@ -127,7 +158,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: DetailViewModel) 
             ),
             value = contentText.value,
             onValueChange = {
-                contentText.value = it
+                viewModel.onContentNewText(it)
             }
         )
 

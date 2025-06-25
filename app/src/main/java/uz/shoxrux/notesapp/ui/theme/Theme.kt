@@ -21,13 +21,13 @@ private val DarkColorScheme = AppColors(
     secondary = Color(0xFFFFBE6C),
     stroke = Color(0xFF868686),
     border = Color(0xFFADADAD),
-    titleText = Color(0xFFFFFCF1),
-    contentText = Color(0xFFC6C6C6),
+    titleText = Color(0xFFFFFADA),
+    contentText = Color(0xFFFFF3A9),
     hint = Color(0xFF939393),
-    gray = Color(0xFF3D3D3D),
+    gray = Color(0xFF3D3A31),
     transparent = Color(0x00FFFFFF),
-    semiTransparent = Color(0x9C898989)
-
+    semiTransparent = Color(0x9C898989),
+    textButton = Color(0xFF3F51B5)
 )
 
 private val LightColorScheme = AppColors(
@@ -36,12 +36,13 @@ private val LightColorScheme = AppColors(
     secondary = Color(0xFFFFBE6C),
     stroke = Color(0xFF535353),
     border = Color(0xFF656565),
-    titleText = Color(0xFF110F0D),
-    contentText = Color(0xFF262522),
+    titleText = Color(0xFF3B3832),
+    contentText = Color(0xFF232019),
     hint = Color(0xFF5C5C5C),
-    gray = Color(0xFFDBDBDB),
+    gray = Color(0xFF8B846E),
     transparent = Color(0x00FFFFFF),
-    semiTransparent = Color(0x9C898989)
+    semiTransparent = Color(0x9C898989),
+    textButton = Color(0xFF3F51B5)
 )
 
 @Composable

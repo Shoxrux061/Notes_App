@@ -14,7 +14,8 @@ data class AppColors(
     val hint: Color,
     val transparent: Color,
     val semiTransparent: Color,
-    val gray: Color
+    val gray: Color,
+    val textButton: Color
 )
 
 val LocalAppColors = staticCompositionLocalOf<AppColors> {

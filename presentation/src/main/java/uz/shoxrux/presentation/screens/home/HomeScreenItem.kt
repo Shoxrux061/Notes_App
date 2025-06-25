@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +19,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -49,40 +52,73 @@ import uz.shoxrux.presentation.ui.color.LocalAppColors
 @Composable
 fun NoteItem(
     title: String,
-    content: String
+    content: String,
+    isSelected: Boolean,
+    isChecking: Boolean,
+    onItemClick: () -> Unit,
+    onCheckChanged: (Boolean) -> Unit,
+    onLongPressed: () -> Unit
 ) {
 
     val colors = LocalAppColors.current
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        onItemClick.invoke()
+                    },
+                    onLongPress = {
+                        onLongPressed.invoke()
+                    }
+                )
+            }
+            .fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(colors.gray)
     ) {
 
-        Column(
+        Row(
             modifier = Modifier.padding(20.dp)
         ) {
-            Text(
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                text = title,
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.nunito_medium)),
-                    fontSize = 18.sp,
-                    color = colors.titleText
+            Column {
+
+                Text(
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text = title,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.nunito_medium)),
+                        fontSize = 18.sp,
+                        color = colors.titleText
+                    )
                 )
-            )
-            Text(
-                text = content,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.nunito_regular)),
-                    fontSize = 16.sp,
-                    color = colors.contentText
+                Text(
+                    text = content,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.nunito_regular)),
+                        fontSize = 16.sp,
+                        color = colors.contentText
+                    )
                 )
-            )
+            }
+
+            if (isChecking) {
+
+                Spacer(Modifier.weight(1f))
+
+                Checkbox(
+                    colors = CheckboxDefaults.colors(colors.primary),
+                    checked = isSelected,
+                    onCheckedChange = {
+                        onCheckChanged.invoke(isSelected)
+                    }
+                )
+            }
 
         }
     }
